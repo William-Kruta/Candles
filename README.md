@@ -1,39 +1,54 @@
-Candles
+# Candles
+
 Candles is a Python utility that downloads, caches, and manages OHLCV (Open, High, Low, Close, Volume) candle data for a given stock ticker using yfinance. It also provides functionality for data analysis, including plotting candlestick charts, calculating historical and annualized volatility, and resampling the data by week, month, or year.
 
-Features
-Data Download & Caching:
+---
+
+### Features
+
+##### - Data Download & Caching:
+
 Downloads candle data from Yahoo Finance and caches it locally in CSV format. Automatically updates data if it becomes stale.
 
-Data Analysis:
+##### - Data Analysis:
 
-Calculate annualized volatility based on closing prices.
-Compute volatility on a yearly basis.
-Resample data by week, month, or year.
-Visualization:
+- Calculate annualized volatility based on closing prices.
+- Compute volatility on a yearly basis.
+- Resample data by week, month, or year.
+
+##### - Visualization:
+
 Plot candlestick charts using mplfinance and historical volatility plots with matplotlib.
 
-Flexible Data Management:
+##### Flexible Data Management:
+
 Easily update data manually, retrieve the latest price, and plot charts directly from your code.
 
-Dependencies
+---
+
+### Dependencies
+
 Make sure you have the following Python packages installed:
 
-numpy
-pandas
-yfinance
-mplfinance
-matplotlib
+- numpy
+- pandas
+- yfinance
+- mplfinance
+- matplotlib
+
 You can install them via pip:
 
-bash
-Copy
-pip install numpy pandas yfinance mplfinance matplotlib
-Usage
-Below is an example of how to use the Candles class:
+###### bash
 
-python
-Copy
+pip install numpy pandas yfinance mplfinance matplotlib
+
+---
+
+### Usage
+
+Below is an example of how to use the `Candles` class:
+
+```
 import numpy as np
 import pandas as pd
 from candles import Candles # Assuming the file is named candles.py
@@ -110,6 +125,7 @@ Plots the historical volatility over the years using matplotlib.
 
 resample_data(weeks: bool, months: bool, years: bool) -> pd.DataFrame
 Resamples the data based on the specified frequency (weekly, monthly, or yearly).
+```
 
 Contributing
 Contributions and suggestions are welcome! If you have any improvements or bug fixes, please open an issue or submit a pull request.
