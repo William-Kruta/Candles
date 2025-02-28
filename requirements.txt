@@ -1,0 +1,8 @@
+# Data
+pandas
+pandas-ta
+yfinance 
+
+# Plotting 
+matplotlib
+mplfinance
