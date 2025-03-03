@@ -22,7 +22,7 @@ Plot candlestick charts using mplfinance and historical volatility plots with ma
 
 ##### Flexible Data Management:
 
-Easily update data manually, retrieve the latest price, and plot charts directly from your code.
+Easily update data manually, retrieve the latest price.
 
 ---
 
@@ -80,11 +80,10 @@ print(f"Last Price: {last_price}")
 annual_vol = candles.get_annualized_volatility()
 print(f"Annualized Volatility: {annual_vol}")
 
-# Calculate volatility by year and plot it
+# Calculate volatility by year
 
 volatility_by_year = candles.get_volatility_by_year()
 print(volatility_by_year)
-candles.plot_historical_volatility()
 
 # Resample data by month (or week, or year)
 
@@ -108,9 +107,6 @@ Downloads or loads cached data based on the provided period and interval.
 get_data(period: str, interval: str) -> pd.DataFrame
 Returns the candle data, downloading it if necessary.
 
-plot_candles()
-Uses mplfinance to plot a candlestick chart of the data.
-
 get_last_price() -> float
 Returns the last closing price from the data.
 
@@ -119,9 +115,6 @@ Computes the annualized volatility from daily returns.
 
 get_volatility_by_year() -> pd.DataFrame
 Calculates and returns a DataFrame of volatility for each year.
-
-plot_historical_volatility()
-Plots the historical volatility over the years using matplotlib.
 
 resample_data(weeks: bool, months: bool, years: bool) -> pd.DataFrame
 Resamples the data based on the specified frequency (weekly, monthly, or yearly).

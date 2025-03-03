@@ -56,7 +56,7 @@ class Candles:
                     print(f"Updated {self.ticker} candles.")
             else:
                 # Read from cache
-                df = pd.read_csv(path, parse_dates=["Date"]).set_index("Date")
+                df = pd.read_csv(path).set_index("Date")
                 last_date = df.index[-1]
                 if self.check_staleness(last_date):
                     df = self._download_candles(period, interval)
@@ -99,12 +99,6 @@ class Candles:
             self.set_data(period, interval)
         return self.data
 
-    def plot_candles(self):
-        import mplfinance as mpf
-
-        df = self.get_data()
-        mpf.plot(df, type="candle", style="charles", title=f"{self.ticker} Candles")
-
     def get_last_price(self) -> float:
         """
         Get the last closing price from the candle data.
@@ -127,7 +121,11 @@ class Candles:
             pd.DataFrame: Downloaded candle data.
         """
         candles = yf.download(
-            self.ticker, period=period, interval=interval, progress=False
+            self.ticker,
+            period=period,
+            interval=interval,
+            progress=False,
+            multi_level_index=False,
         )
         return candles
 
@@ -184,20 +182,6 @@ class Candles:
 
         return pd.DataFrame(volatility_by_year).set_index("Year")
 
-    def plot_historical_volatility(self):
-        """
-        Plot the historical volatility from the closing prices.
-        """
-        import matplotlib.pyplot as plt
-
-        df = self.get_volatility_by_year()
-        plt.plot(df.index, df["Volatility"], label="Historical Volatility")
-        plt.title("Historical Volatility")
-        plt.xlabel("Year")
-        plt.ylabel("Volatility")
-        plt.legend()
-        plt.show()
-
     def resample_data(
         self,
         weeks: bool = False,
@@ -235,4 +219,7 @@ class Candles:
 
 
 if __name__ == "__main__":
-    candles = Candles("AAPL")
+    candles = Candles("AVAV")
+
+    data = candles.get_data()
+    print(data)
