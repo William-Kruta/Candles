@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import yfinance as yf
+
 import datetime as dt
 from pathlib import Path
 
@@ -34,6 +35,23 @@ class Candles:
         self.log = log
         self.data = pd.DataFrame()
         self.date_format = "%Y-%m-%d"
+        self.decimal_form = False
+        self.earnings_date = ""
+
+    def set_next_earnings(self):
+        obj = yf.Ticker(self.ticker)
+        earnings = obj.info.get("earningsTimestamp")
+        pst_offset = dt.timezone(dt.timedelta(hours=-8))
+        try:
+            dt_pst = dt.datetime.fromtimestamp(earnings, pst_offset)
+        except TypeError:
+            dt_pst = dt.datetime(year=1970, month=1, day=1)
+        self.earnings_date = dt_pst.date()
+
+    def get_next_earnings(self):
+        if self.earnings_date == "":
+            self.set_next_earnings()
+        return self.earnings_date
 
     def set_data(
         self,
@@ -217,9 +235,53 @@ class Candles:
             data = data.resample("Y").agg(agg_dict)
         return data
 
+    def create_backtest(
+        self,
+        change_observations: list = [1, 5, 10],
+        increase: bool = False,
+        decrease: bool = False,
+    ):
+        if self.decimal_form:
+            multiplier = 1
+        else:
+            multiplier = 100
+        shifted_data = pd.DataFrame()
+        shifted_data["close"] = self.data["Close"]
+        # Calculate shifted data.
+        for co in change_observations:
+            shifted_value = self.data["Close"].shift(-co)
+            shifted_dates = shifted_value.index.to_list()  # Timestamp data
+            new_dates = []
+            for i in range(len(shifted_dates) + 1):
+                try:
+                    new_dates.append(shifted_dates[i + co])
+                except IndexError:
+                    new_dates.append(np.nan)
+            new_dates = new_dates[:-1]
+            shifted_data[f"shift_{co}_value"] = shifted_value
+            shifted_data[f"shift_{co}_date"] = new_dates
+        for co in change_observations:
 
-if __name__ == "__main__":
-    candles = Candles("AVAV")
+            if decrease:
+                start_val = shifted_data["close"]
+                end_val = shifted_data[f"shift_{co}_value"]
+                shifted_data[f"shift_{co}_change"] = (
+                    ((start_val - end_val) / abs(start_val)) * multiplier * -1
+                )
+            elif increase:
+                start_val = shifted_data["close"]
+                end_val = shifted_data[f"shift_{co}_value"]
+                shifted_data[f"shift_{co}_change"] = (
+                    (end_val - start_val) / abs(start_val)
+                ) * multiplier
+        reordered_cols = ["close"]
 
-    data = candles.get_data()
-    print(data)
+        for co in change_observations:
+            date = f"shift_{co}_date"
+            value = f"shift_{co}_value"
+            change = f"shift_{co}_change"
+            reordered_cols.append(date)
+            reordered_cols.append(value)
+            reordered_cols.append(change)
+        shifted_data = shifted_data[reordered_cols]
+        return shifted_data
